@@ -2,7 +2,10 @@
 import http from 'http';
 import express, { Express } from 'express';
 import morgan from 'morgan';
-import routes from './routes/posts';
+import routes from './routes';
+import swaggerUi from 'swagger-ui-express';
+import PingController from './controllers/ping';
+import PostController from './controllers/posts';
 
 const router: Express = express();
 
@@ -14,6 +17,8 @@ router.use(morgan('dev'));
 router.use(express.urlencoded({ extended: false }));
 /** Takes care of JSON data */
 router.use(express.json());
+
+router.use(express.static('public'));
 
 /** RULES OF OUR API */
 router.use((req, res, next) => {
@@ -29,17 +34,26 @@ router.use((req, res, next) => {
     next();
 });
 
+router.use(
+    '/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(undefined, {
+        swaggerOptions: {
+            url: '/swagger.json',
+        },
+    })
+);
+
 /** Routes */
 router.use('/', routes);
-
-/** Error handling */
-router.use((req, res, next) => {
-    const error = new Error('not found');
-    return res.status(404).json({
-        message: error.message
-    });
-});
-
+    
+    /** Error handling */
+    /*router.use((req, res, next) => {
+        const error = new Error('not found');
+        return res.status(404).json({
+            message: error.message
+        });
+    });*/
 /** Server */
 const httpServer = http.createServer(router);
 const PORT: any = process.env.PORT ?? 6060;

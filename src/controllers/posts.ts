@@ -9,6 +9,8 @@ interface Post {
     body: String;
 }
 
+// TODO-JCM Migrate to class
+
 // getting all posts
 const getPosts = async (req: Request, res: Response, next: NextFunction) => {
     // get some posts
